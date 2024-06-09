@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Sentiment Indicator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .bullish {
+            color: green;
+        }
+        .bearish {
+            color: red;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Market Sentiment Indicator</h2>
+        <table id="sentiment-table">
+            <thead>
+                <tr>
+                    <th>Currency</th>
+                    <th>CPI</th>
+                    <th>Interest Rate</th>
+                    <th>Unemployment</th>
+                    <th>GDP Growth</th>
+                    <th>Market Sentiment</th>
+                </tr>
+            </thead>
+            <tbody id="sentiment-tbody">
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const data = {
+            "USD": { cpi: 2.5, interestRate: 1.5, unemploymentRate: 5.0, gdpGrowth: 3.0 },
+            "EUR": { cpi: 1.5, interestRate: 0.5, unemploymentRate: 7.0, gdpGrowth: 1.5 },
+            "GBP": { cpi: 2.0, interestRate: 1.0, unemploymentRate: 4.5, gdpGrowth: 2.0 },
+            "CHF": { cpi: 0.5, interestRate: -0.75, unemploymentRate: 3.0, gdpGrowth: 1.0 },
+            "CAD": { cpi: 1.8, interestRate: 1.75, unemploymentRate: 5.5, gdpGrowth: 2.5 },
+            "JPY": { cpi: 0.2, interestRate: -0.1, unemploymentRate: 2.5, gdpGrowth: 0.5 },
+            "NZD": { cpi: 1.9, interestRate: 1.0, unemploymentRate: 4.0, gdpGrowth: 3.5 },
+        };
+
+        function calculateSentiment(currencyData) {
+            const cpiSentiment = currencyData.cpi < 2.0 ? "Bullish" : "Bearish";
+            const interestRateSentiment = currencyData.interestRate < 1.0 ? "Bullish" : "Bearish";
+            const unemploymentSentiment = currencyData.unemploymentRate < 4.0 ? "Bullish" : "Bearish";
+            const gdpSentiment = currencyData.gdpGrowth > 2.5 ? "Bullish" : "Bearish";
+
+            const marketSentimentScore = (currencyData.cpi < 2.0 ? 1 : -1) +
+                                         (currencyData.interestRate < 1.0 ? 1 : -1) +
+                                         (currencyData.unemploymentRate < 4.0 ? 1 : -1) +
+                                         (currencyData.gdpGrowth > 2.5 ? 1 : -1);
+            const marketSentiment = marketSentimentScore > 0 ? "Bullish" : "Bearish";
+
+            return {
+                cpiSentiment,
+                interestRateSentiment,
+                unemploymentSentiment,
+                gdpSentiment,
+                marketSentiment
+            };
+        }
+
+        function populateTable() {
+            const tbody = document.getElementById('sentiment-tbody');
+            tbody.innerHTML = '';
+            Object.keys(data).forEach(currency => {
+                const currencyData = data[currency];
+                const sentiment = calculateSentiment(currencyData);
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${currency}</td>
+                    <td class="${sentiment.cpiSentiment.toLowerCase()}">${sentiment.cpiSentiment}</td>
+                    <td class="${sentiment.interestRateSentiment.toLowerCase()}">${sentiment.interestRateSentiment}</td>
+                    <td class="${sentiment.unemploymentSentiment.toLowerCase()}">${sentiment.unemploymentSentiment}</td>
+                    <td class="${sentiment.gdpSentiment.toLowerCase()}">${sentiment.gdpSentiment}</td>
+                    <td class="${sentiment.marketSentiment.toLowerCase()}">${sentiment.marketSentiment}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', populateTable);
+    </script>
+</body>
+</html>
